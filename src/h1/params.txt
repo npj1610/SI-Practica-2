@@ -1,0 +1,1 @@
+{"dimensions": 2, "class_colors": ["red", "blue", "green"], "class_names": ["circle", "cross", "triangle"], "img_files": ["circle.gif", "cross.gif", "triangle.gif"]}
