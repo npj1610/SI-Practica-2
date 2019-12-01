@@ -5,7 +5,11 @@
  */
 package pkg1920_p2si;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import org.json.simple.parser.ParseException;
+import pkg1920_p2si.io.Database;
 
 /**
  *
@@ -45,7 +49,26 @@ public class Main {
         MostrarImagen imgShow = new MostrarImagen();
         imgShow.setImage(img);
         imgShow.mostrar();
-
+        
+        Database db;
+        try {
+            db = new Database("./2dpoints/params.txt", "./2dpoints/data.txt");
+        } catch (FileNotFoundException e) {
+            System.out.println("File does not exist");
+            System.out.println(e);
+            return;
+        } catch (IOException e) {
+            System.out.println("Read error");
+            System.out.println(e);
+            return;
+        } catch (ParseException e) {
+            System.out.println("File badly formated");
+            System.out.println(e);
+            return;
+        }
+        
+        System.out.println("Dimensions: "+db.dimensions);
+        System.out.println("Classes: "+db.clases);
         
     }
     
