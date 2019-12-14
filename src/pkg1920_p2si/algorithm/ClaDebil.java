@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package h1.pkg1920_p2si.algorithm;
+package pkg1920_p2si.algorithm;
 
 /**
  *

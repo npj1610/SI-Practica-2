@@ -67,9 +67,7 @@ public class Main {
             return;
         }
         
-        System.out.println("Dimensions: "+db.dimensions);
-        System.out.println("Classes: "+db.clases);
-        
+        System.out.println("Dimensions: "+db.dimensiones);
     }
     
 }

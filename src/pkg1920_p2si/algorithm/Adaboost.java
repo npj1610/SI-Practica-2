@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package h1.pkg1920_p2si.algorithm;
+package pkg1920_p2si.algorithm;
 
 /**
  *
  * @author Niko
  */
+
+//Recibirá los conjuntos de train, pero luego tendrá que ajustarlos para cada clasificador
+//      AKA coger los primeros y cuadrar las proporciones de ejemplos
+
 public class Adaboost {
     
 }
