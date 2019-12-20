@@ -25,7 +25,11 @@ public class Database {
     
     final private ArrayList<String> clases;
     final private ArrayList<Conjunto> puntos;
-    final public int dimensiones;
+    final private int dimensiones;
+    
+    public int getDimensiones() {
+        return dimensiones;
+    }
     
     public String getClase(int c) {
         return clases.get(c);
@@ -39,6 +43,10 @@ public class Database {
             }
         }
         return output;
+    }
+    
+    public ArrayList<String> getClases() {
+        return clases;
     }
     
     public int getNumClases() {
