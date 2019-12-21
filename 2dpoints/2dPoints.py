@@ -1,15 +1,15 @@
-from graphics import GraphWin
-from graphics import Point as oldPoint
-from graphics import Rectangle
-from graphics import color_rgb
-from graphics import Image
-from graphics import GraphicsError
+from libs.graphics import GraphWin
+from libs.graphics import Point as oldPoint
+from libs.graphics import Polygon
+from libs.graphics import Rectangle
+from libs.graphics import color_rgb
+from libs.graphics import Image
+from libs.graphics import GraphicsError
 
 import math
 
 import json
 
-import os
 
 # Estoy usando puntos como vectores, me siento sucia
 class Point(oldPoint):
@@ -40,25 +40,37 @@ class Point(oldPoint):
     def unitary(self):
         return self / self.length()
 
+    def __getitem__(self, key):
+        if key == 0:
+            return self.x
+        if key == 1:
+            return self.y
+        raise IndexError()
 
 class AdaboostProblem:
     def __init__(self):
+        # problem parameters
         try:
             with open("params.txt", "r") as param_file:
                 self.params = json.load(param_file)
         except (json.decoder.JSONDecodeError, FileNotFoundError):
-            # problem parameters
             self.params = dict()
             self.params["dimensions"] = 2
             self.params["class_colors"] = ["red", "blue", "green"]
             self.params["class_names"] = ["circle", "cross", "triangle"]
             self.params["img_files"] = ["circle.gif", "cross.gif", "triangle.gif"]
+        # problem data
         try:
             with open("data.txt", "r") as data_file:
                 self.data = json.load(data_file)
         except (json.decoder.JSONDecodeError, FileNotFoundError):
-            # problem data
             self.data = dict()
+        # clasificador
+        try:
+            with open("adaboost.txt", "r") as adaboost_file:
+                self.adaboost =  json.load(adaboost_file)
+        except (json.decoder.JSONDecodeError, FileNotFoundError):
+            self.adaboost = None
 
     def data_to_string(self):
         return json.dumps(self.data)
@@ -66,6 +78,12 @@ class AdaboostProblem:
     def params_to_string(self):
         return json.dumps(self.params)
 
+def clasificar(clasificador, punto):
+    resultado = 0.0
+    for c in range(len(clasificador["clasificadores"])):
+        clas = clasificador["clasificadores"][c]
+        resultado += clasificador["confianzas"][c]*(1 if clas["direccion"] ^ (0 < punto[clas["dimension"]]-clas["valor"]) else -1)
+    return resultado
 
 class Window:
     def __init__(self, problem):
@@ -114,6 +132,75 @@ class Window:
             img = Image(adapted_pos, self.problem.params["img_files"][self.problem.data[real_pos]])
             self.img_dict[real_pos] = img
             img.draw(self.win)
+
+        # Draw the adaboost classifiers
+        if self.problem.adaboost is not None:
+            #change this to increase precision
+            adaboost_block_multiplier = 4;
+
+            puntos_clasificados = []
+            lineas_poligono = []
+            for classifier in self.problem.adaboost["clasificadores"]:
+                puntos_clasificados.append({})
+                lineas_poligono.append([])
+
+
+            for i in range(256 // adaboost_block_multiplier):
+                for j in range(256 // adaboost_block_multiplier):
+                    punto = Point(i, j)*adaboost_block_multiplier
+                    for c in range(len(self.problem.adaboost["clasificadores"])):
+                        # str(punto.getX()) + " " + str(punto.getY())
+                        puntos_clasificados[c][str(punto)] = clasificar(self.problem.adaboost["clasificadores"][c], punto)
+
+            for i in range(256 // adaboost_block_multiplier):
+                for j in range(256 // adaboost_block_multiplier):
+                    punto = Point(i, j)*adaboost_block_multiplier
+                    for c in range(len(self.problem.adaboost["clasificadores"])):
+                        if 0 < puntos_clasificados[c][str(punto)]:
+                            superior = punto - Point(adaboost_block_multiplier, 0)
+                            inferior = punto + Point(adaboost_block_multiplier, 0)
+                            izquierdo = punto - Point(0, adaboost_block_multiplier)
+                            derecho = punto + Point(0, adaboost_block_multiplier)
+                            inferior_derecho = punto + Point(adaboost_block_multiplier, adaboost_block_multiplier)
+                            # borde superior:
+                            if superior.getX() < 0 or puntos_clasificados[c][str(superior)] <= 0:
+                                lineas_poligono[c].append([self.graph_start + punto * self.block_size, self.graph_start + derecho * self.block_size])
+                            # borde inferior:
+                            if 255 < inferior.getX() or puntos_clasificados[c][str(inferior)] <= 0:
+                                lineas_poligono[c].append([self.graph_start + inferior * self.block_size, self.graph_start + inferior_derecho * self.block_size])
+                            # borde izquierdo:
+                            if izquierdo.getY() < 0 or puntos_clasificados[c][str(izquierdo)] <= 0:
+                                lineas_poligono[c].append([self.graph_start + punto * self.block_size, self.graph_start + inferior * self.block_size])
+                            # borde derecho:
+                            if 255 < derecho.getY() or puntos_clasificados[c][str(derecho)] <= 0:
+                                lineas_poligono[c].append([self.graph_start + derecho * self.block_size, self.graph_start + inferior_derecho * self.block_size])
+
+            self.polygons = []
+
+            for c in range(len(self.problem.adaboost["clasificadores"])):
+                self.polygons.append([])
+                puntos = []
+                punto_actual = lineas_poligono[c][0][1]
+                puntos.append(lineas_poligono[c][0][0])
+                del lineas_poligono[c][0]
+                while len(lineas_poligono[c]) != 0:
+                    for linea in range(len(lineas_poligono[c])):
+                        ind = -1
+                        if str(punto_actual) == str(lineas_poligono[c][linea][0]):
+                            ind = 1
+                        if str(punto_actual) == str(lineas_poligono[c][linea][1]):
+                            ind = 0
+                        if ind != -1:
+                            puntos.append(punto_actual)
+                            punto_actual = lineas_poligono[c][linea][ind]
+                            del lineas_poligono[c][linea]
+                            break
+                poli = Polygon(puntos)
+                poli.setOutline(self.problem.params["class_colors"][c])
+                poli.setFill(self.problem.params["class_colors"][c])
+                self.polygons[c].append(poli)
+                if c == 0:
+                    poli.draw(self.win)
 
     def get_mouse(self):
         return self.win.getMouse()
@@ -164,8 +251,12 @@ class Window:
         if self.pos_in_buttons_x(pos):
             # Checks each button
             for class_i in range(len(self.problem.params["class_names"])):
+                for poli in self.polygons[class_i]:
+                    poli.undraw()
                 if self.pos_in_button_y(pos, class_i):
                     self.actual_class = class_i
+                    for poli in self.polygons[class_i]:
+                        poli.draw(self.win)
 
 
 def main():
