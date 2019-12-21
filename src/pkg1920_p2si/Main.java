@@ -5,14 +5,13 @@
  */
 package pkg1920_p2si;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import org.json.simple.parser.ParseException;
 import pkg1920_p2si.algorithm.Adaboost;
 import pkg1920_p2si.algorithm.GeneradorConjuntos;
 import pkg1920_p2si.algorithm.Parametros;
+import pkg1920_p2si.io.Adaboost2JSON;
 import pkg1920_p2si.io.Database;
+import pkg1920_p2si.io.IO;
+import pkg1920_p2si.io.JSON2Adaboost;
 
 /**
  *
@@ -30,21 +29,8 @@ public class Main {
     public static void main(String[] args) {
         
         Database db;
-        try {
-            db = new Database("./2dpoints/params.txt", "./2dpoints/data.txt");
-        } catch (FileNotFoundException e) {
-            System.out.println("File does not exist");
-            System.out.println(e);
-            return;
-        } catch (IOException e) {
-            System.out.println("Read error");
-            System.out.println(e);
-            return;
-        } catch (ParseException e) {
-            System.out.println("File badly formated");
-            System.out.println(e);
-            return;
-        }
+        db = new Database("./2dpoints/params.txt", "./2dpoints/data.txt");
+        
         
         //Establece los parametros de la imagen
         Parametros.setDimensiones(db.getDimensiones());
@@ -61,7 +47,25 @@ public class Main {
         
         Adaboost a = new Adaboost(gc.getTrain(), db.getClases());
         
+        System.out.println("Viejo");
+        
         a.test(gc.getTest());
+        
+        String archivo = "./2dpoints/adaboost.txt";
+        
+        IO.writeJSON(archivo, Adaboost2JSON.serializar(a));
+        
+        System.out.println("Nuevo");
+        
+        Adaboost b = JSON2Adaboost.parsear(IO.readJSON(archivo));
+        
+        b.test(gc.getTest());
+        
+        if(Adaboost2JSON.serializar(a).equals(Adaboost2JSON.serializar(b))) {
+            System.out.println("ESTABLE");
+        } else {
+            System.out.println("INESTABLE");
+        }
     }
     
 }

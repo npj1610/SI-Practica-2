@@ -13,9 +13,33 @@ import java.util.Random;
  */
 public class ClaDebil {
  
-    final private int dimension;
-    final private int valor;
-    private boolean direccion;
+    final protected int dimension;
+    final protected int valor;
+    protected boolean direccion;
+    
+    //Could not go full Adaboost workaround ughhhhh
+    //sticking to the "generate" thing tho
+    private ClaDebil(int dimension, int valor, boolean direccion) {
+        this.dimension = dimension;
+        this.valor = valor;
+        this.direccion = direccion;
+    }    
+    static public ClaDebil generate(int dimension, int valor, boolean direccion) {
+        ClaDebil output = new ClaDebil(dimension, valor, direccion);
+        return output;
+    }
+    
+    public int getDimension() {
+        return dimension;
+    }
+    
+    public int getValor() {
+        return valor;
+    }
+    
+    public boolean getDireccion() {
+        return direccion;
+    }
     
     public ClaDebil () {
         Random rndgen = new Random();
@@ -24,7 +48,8 @@ public class ClaDebil {
         direccion = rndgen.nextInt(2) == 1;
     }
     
-    public void invertir() {
+    //visibilidad de paquete para evitar que caiga **en malas manos**
+    void invertir() {
         direccion = !direccion;
     }
     
@@ -32,4 +57,5 @@ public class ClaDebil {
         return direccion ^ (0 < p.get(dimension)-valor) ?
                 1 : -1;
     }
+    
 }

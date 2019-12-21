@@ -57,35 +57,39 @@ public class Database {
         return puntos.get(c);
     }
     
-    public Database (String paramsFile, String dataFile) throws FileNotFoundException, IOException, ParseException {
-        JSONObject params = (JSONObject) new JSONParser().parse(new FileReader(paramsFile));
-        JSONObject data = (JSONObject) new JSONParser().parse(new FileReader(dataFile));
-        
-        //dimensiones
-        dimensiones = (int) Math.floor((Long) params.get("dimensions"));
-        
-        //clases
-        JSONArray JSONclasses = (JSONArray) params.get("class_names");
-        clases = new ArrayList<>();
-        
-        Iterator itr1 = JSONclasses.iterator();
-        while (itr1.hasNext())  
-        {
-            clases.add((String) itr1.next());
-        }
-        
-        //puntos
-        puntos = new ArrayList<>();
-        for (int i=0; i<clases.size(); i++) {
-            puntos.add(new Conjunto());
-        }
-        
-        Map datos = (Map) data;
-        Iterator<Map.Entry> itr2 = datos.entrySet().iterator();
-        
-        while (itr2.hasNext()) {
-            Map.Entry pair = itr2.next();
-            puntos.get((int) Math.floor((Long) pair.getValue())).add(new Punto((String) pair.getKey()));
+    public Database (String paramsFile, String dataFile) {
+        try {
+            JSONObject params = (JSONObject) new JSONParser().parse(new FileReader(paramsFile));
+            JSONObject data = (JSONObject) new JSONParser().parse(new FileReader(dataFile));
+
+            //dimensiones
+            dimensiones = (int) Math.floor((Long) params.get("dimensions"));
+
+            //clases
+            JSONArray JSONclasses = (JSONArray) params.get("class_names");
+            clases = new ArrayList<>();
+
+            Iterator itr1 = JSONclasses.iterator();
+            while (itr1.hasNext())  
+            {
+                clases.add((String) itr1.next());
+            }
+
+            //puntos
+            puntos = new ArrayList<>();
+            for (int i=0; i<clases.size(); i++) {
+                puntos.add(new Conjunto());
+            }
+
+            Map datos = (Map) data;
+            Iterator<Map.Entry> itr2 = datos.entrySet().iterator();
+
+            while (itr2.hasNext()) {
+                Map.Entry pair = itr2.next();
+                puntos.get((int) Math.floor((Long) pair.getValue())).add(new Punto((String) pair.getKey()));
+            }
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 }

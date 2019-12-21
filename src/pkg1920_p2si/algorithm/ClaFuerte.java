@@ -16,6 +16,27 @@ public class ClaFuerte {
     ArrayList<ClaDebil> clasificadores;
     ArrayList<Double> confianzas;
     
+    //Imma stick with the Adaboost thing cuz OCD
+    private ClaFuerte() {}    
+    static public ClaFuerte generate(ArrayList<ClaDebil> clasificadores, ArrayList<Double> confianzas) {
+        ClaFuerte output = new ClaFuerte();
+        output.clasificadores = clasificadores;
+        output.confianzas = confianzas;
+        return output;
+    }
+    
+    public int getNumClasificadores() {
+        return clasificadores.size();
+    }
+    
+    public ClaDebil getClasificador(int i) {
+        return clasificadores.get(i);
+    }
+    
+    public Double getConfianza(int i) {
+        return confianzas.get(i);
+    }
+    
     //recibe las etiquetas como 1 o -1
     public ClaFuerte(Conjunto imagenes, ArrayList<Integer> etiquetas) {
         clasificadores = new ArrayList<>();
@@ -100,5 +121,4 @@ public class ClaFuerte {
         }
         return output;
     }
-    
 }

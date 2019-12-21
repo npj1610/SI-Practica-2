@@ -6,6 +6,7 @@
 package pkg1920_p2si.algorithm;
 
 import java.util.ArrayList;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -18,6 +19,17 @@ import java.util.ArrayList;
 public class Adaboost {
     ArrayList<ClaFuerte> clasificadores;
     ArrayList<String> nombres;
+    
+    //Weird workaround to avoid same erasure with the other constructor
+    //Also weird workaround to avoid coupling with input/output module
+    //I wanted to do some reflection stuff for the JSON parsing but no time
+    private Adaboost() {}    
+    static public Adaboost generate(ArrayList<ClaFuerte> clasificadores, ArrayList<String> nombres) {
+        Adaboost output = new Adaboost();
+        output.clasificadores = clasificadores;
+        output.nombres = nombres;
+        return output;
+    }
     
     public Adaboost(ArrayList<Conjunto> train, ArrayList<String> nombres) {
         this.nombres = nombres;
@@ -49,11 +61,19 @@ public class Adaboost {
         }
     }
     
+    public int getNumClases() {
+        return nombres.size();
+    }
+    
     public String getNombreClase(int clase) {
         if(clase == -1) {
             return "No Clasificable";
         }
         return nombres.get(clase);
+    }
+    
+    public ClaFuerte getClasificador(int clase) {
+        return clasificadores.get(clase);
     }
     
     //Devuelve -1 si ningun clasificador es positivo
