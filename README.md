@@ -15,6 +15,9 @@ Both programs are written in an awful mix of English and Spanish, the code is me
 
 `2dPoints` offers an interface to edit the data set and visualize the strong learners. Click on the left buttons to change the type of point you create or to change the strong learner displayed. Click on the graph to add a point, or click on an already existint point to delete it. New data set is saved on window closing. To delete all points at once, close the program and delete the `data.txt`.
 
+<p align="center">
+    <img src="/interface.png">
+</p>
 
 It might take a while to load because of the strong learner representation, you can change the resolution of the grid in which the strong learner is displayed by passing a number argument to `2dPoints.py`. The default block size value is 4, a smaller number will provide more resolution, and a bigger number will work faster (and probably look nicer).
 
