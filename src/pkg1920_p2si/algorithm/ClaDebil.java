@@ -17,6 +17,11 @@ public class ClaDebil {
     final protected int valor;
     protected boolean direccion;
     
+    @Override
+    public String toString() {
+        return "[dimension: "+dimension+"; valor: "+valor+"; direccion: "+direccion+"]";
+    }
+    
     //Could not go full Adaboost workaround ughhhhh
     //sticking to the "generate" thing tho
     private ClaDebil(int dimension, int valor, boolean direccion) {

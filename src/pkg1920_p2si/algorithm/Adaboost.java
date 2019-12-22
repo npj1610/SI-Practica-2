@@ -6,7 +6,7 @@
 package pkg1920_p2si.algorithm;
 
 import java.util.ArrayList;
-import org.json.simple.JSONObject;
+import java.util.Collections;
 
 /**
  *
@@ -48,7 +48,7 @@ public class Adaboost {
             int numEjemplos = train.get(clase).size()/(train.size()-1);
             for(Conjunto c : train) {
                 if(c != train.get(clase)) {
-                    for(int img=0; img<numEjemplos && img<train.size(); img++) {
+                    for(int img=0; img<numEjemplos && img<c.size(); img++) {
                         imagenes.add(c.get(img));
                         etiquetas.add(-1);
                     }
@@ -91,6 +91,7 @@ public class Adaboost {
         return resultado;
     }
     
+    /*
     public void test(ArrayList<Conjunto> test) {
         int errores = 0;
         int total = 0;
@@ -105,7 +106,57 @@ public class Adaboost {
                 total++;
             }
         }
-        System.out.println("El porcentaje de aciertos es "+100*(total-errores)/(double) total+"%");
+        System.out.println("El porcentaje de aciertos es "+100*(total-errores)/(double) total+"% de "+total+" imagenes");
     }
+    */
     
+    public void test(ArrayList<Conjunto> test, boolean verbose) {
+        int errores = 0;
+        int total = 0;
+        ArrayList<Integer> erroresFuerte = new ArrayList<>(
+                Collections.nCopies(test.size(), 0)
+        );
+        for(int conjunto=0; conjunto<test.size(); conjunto++) {
+            for(Punto img : test.get(conjunto)) {
+                //Clasificar con extra steps
+                int result = -1;
+                double valor = 0.0;
+                for(int clase=0; clase<clasificadores.size(); clase++) {
+                    double nuevoValor = clasificadores.get(clase).clasificar(img);
+                    if(valor < nuevoValor) {
+                        result = clase;
+                        valor = nuevoValor;
+                    }
+                    if (0 < nuevoValor && clase!=conjunto) {
+                        erroresFuerte.set(clase, erroresFuerte.get(clase)+1);
+                        if (verbose) {
+                            System.out.println("\tEl punto "+getNombreClase(conjunto)+" con coordenadas: "+img);
+                            System.out.println("\tProvoca un falso positivo en el clasificador fuerte de "+getNombreClase(clase));
+                        }
+                    } else if (nuevoValor <= 0 && clase == conjunto) {
+                        erroresFuerte.set(clase, erroresFuerte.get(clase)+1);
+                        if (verbose) {
+                            System.out.println("\tEl punto "+getNombreClase(conjunto)+" con coordenadas: "+img);
+                            System.out.println("\tProvoca un falso negativo en su clasificador fuerte");
+                        }
+                    }
+                }
+                if(result != conjunto) {
+                    if (verbose) {
+                        System.out.println("El punto con coordenadas: "+img);
+                        System.out.println("Es un "+getNombreClase(conjunto)+" pero ha sido clasificado como "+getNombreClase(result));
+                    }
+                    errores++;
+                }
+                total++;
+            }
+        }
+        System.out.println("El porcentaje de aciertos es "+100*(total-errores)/(double) total+"% de "+total+" imagenes");
+        for(int i=0; i<erroresFuerte.size(); i++) {
+            int error = erroresFuerte.get(i);
+            System.out.println("\tEl porcentaje de aciertos del clasificador fuerte "+getNombreClase(i)+" es "+100*(total-error)/(double) total+"%");
+        }
+        
+        
+    }
 }

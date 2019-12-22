@@ -66,6 +66,7 @@ public class ClaFuerte {
             //Actualiza los pesos
             double acumular = 0.0;
             for(int p=0; p<pesos.size(); p++) {
+                
                 double multiplicador = Math.exp(
                         -confianzas.get(t) *
                         etiquetas.get(p) *
@@ -75,6 +76,7 @@ public class ClaFuerte {
                 pesos.set(p, nuevoPeso);
                 acumular += nuevoPeso;
             }
+            
             //Normaliza los pesos
             for(int p=0; p<pesos.size(); p++) {
                 pesos.set(p, pesos.get(p)/acumular);
@@ -91,7 +93,7 @@ public class ClaFuerte {
             }
         }
         //Pone un limite al error para evitar confianza infinita
-        double min = 1.0/imagenes.size();
+        double min = Math.pow(10, -16.2556);
         if (error <= min) {
             error = min;
         } else if (1-min <= error) {

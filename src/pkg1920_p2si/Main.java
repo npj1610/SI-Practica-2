@@ -36,36 +36,32 @@ public class Main {
         Parametros.setDimensiones(db.getDimensiones());
         Parametros.setRangoValores(255);
         //Establece los parametros de los sets
-        Parametros.setModoGenerador("fijo");
+        Parametros.setModoGenerador("aleatorio");
         Parametros.setPorcentajeTrain(80);
         //Establece los parametros de adaboost
-        Parametros.setIntentosAleatorios(200);
-        Parametros.setNumeroClasificadores(100);
+        Parametros.setIntentosAleatorios(600);
+        Parametros.setNumeroClasificadores(300);
         
         GeneradorConjuntos gc = new GeneradorConjuntos(db);
         gc.generarConjuntos();
         
         Adaboost a = new Adaboost(gc.getTrain(), db.getClases());
         
-        System.out.println("Viejo");
         
-        a.test(gc.getTest());
+        
+        System.out.println("TRAIN:");
+        a.test(gc.getTrain(), false);
+        System.out.println("TEST:");
+        a.test(gc.getTest(), false);
+        
+        
         
         String archivo = "./2dpoints/adaboost.txt";
         
         IO.writeJSON(archivo, Adaboost2JSON.serializar(a));
         
-        System.out.println("Nuevo");
-        
         Adaboost b = JSON2Adaboost.parsear(IO.readJSON(archivo));
         
-        b.test(gc.getTest());
-        
-        if(Adaboost2JSON.serializar(a).equals(Adaboost2JSON.serializar(b))) {
-            System.out.println("ESTABLE");
-        } else {
-            System.out.println("INESTABLE");
-        }
     }
     
 }
