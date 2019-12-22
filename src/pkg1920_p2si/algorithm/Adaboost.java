@@ -13,9 +13,6 @@ import java.util.Collections;
  * @author Niko
  */
 
-//Recibirá los conjuntos de train, pero luego tendrá que ajustarlos para cada clasificador
-//      AKA coger los primeros y cuadrar las proporciones de ejemplos
-
 public class Adaboost {
     ArrayList<ClaFuerte> clasificadores;
     ArrayList<String> nombres;
@@ -90,25 +87,6 @@ public class Adaboost {
         
         return resultado;
     }
-    
-    /*
-    public void test(ArrayList<Conjunto> test) {
-        int errores = 0;
-        int total = 0;
-        for(int conjunto=0; conjunto<test.size(); conjunto++) {
-            for(Punto img : test.get(conjunto)) {
-                int result = clasificar(img);
-                if(result != conjunto) {
-                    System.out.println("El punto con coordenadas: "+img);
-                    System.out.println("Es un "+getNombreClase(conjunto)+" pero ha sido clasificado como "+getNombreClase(result));
-                    errores++;
-                }
-                total++;
-            }
-        }
-        System.out.println("El porcentaje de aciertos es "+100*(total-errores)/(double) total+"% de "+total+" imagenes");
-    }
-    */
     
     public void test(ArrayList<Conjunto> test, boolean verbose) {
         int errores = 0;
