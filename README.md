@@ -1,7 +1,18 @@
-# SI-Practica-2
+# Threshold-based AdaBoost
+### *Visualization of bidimensional example*
 
-The `2dPoints.py` file is a small program to edit test data sets for Adaboost:
+<br>
 
-The data set has 2 dimensions with values ranging from 0 to 255 (actually 5 to 252 due to the bad interface).
+Implementation of AdaBoost as explained in the `assignment.pdf` document. Threshold-based refers to the fact that all hyperplanes (weak learners) are parallel to every dimension's axis except for the one they are perpendicular to. Final objective is to be able to classify handwritten digits.
 
-There are three classes (red circle, blue cross and green triangle) to assign to each data point. Click on any of the right-side images and add a point of that class by clicking inside the diagram. You can easily add new classes by editing the code and adding an image.
+This stage of the project consists on a bidimensional example which can be easily represented. This allows for a friendlier debugging environment. Each dimension ranges from 0 to 255. There are three classes: circle (red), cross (blue) and triangle (green). The main program is written in Java 8 and inside a _NetBeans 11.0_ project, and a support program written in Python 3.6 is used to visualize the strong learners and edit the data set.
+
+Both programs are written in an awful mix of English and Spanish, the code is messy (especially the Python one) and most parameters must be set through code changes. Consider this a **warning**
+
+## `2dPoints.py` 
+
+`2dPoints` offers an interface to edit the data set and visualize the strong learners. Click on the left buttons to change the type of point you create or to change the strong learner displayed. Click on the graph to add a point, or click on an already existint point to delete it. New data set is saved on window closing.
+
+It might take a while to load because of the strong learner representation, you can change the resolution of the grid in which the strong learner is displayed by passing a number argument to `2dPoints.py`. The default block size value is 4, a smaller number will provide more resolution, and a bigger number will work faster (and probably look nicer).
+
+The interface is kind of wonky, but it works. It uses [John Zelle's graphics library](https://mcsp.wartburg.edu/zelle/python/graphics/graphics.pdf)
