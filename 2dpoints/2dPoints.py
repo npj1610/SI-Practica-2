@@ -10,6 +10,7 @@ import math
 
 import json
 
+import sys
 
 # Estoy usando puntos como vectores, me siento sucia
 class Point(oldPoint):
@@ -136,7 +137,7 @@ class Window:
         # Draw the adaboost classifiers
         if self.problem.adaboost is not None:
             #change this to increase precision
-            adaboost_block_multiplier = 4;
+            adaboost_block_multiplier = GROSOR
 
             puntos_clasificados = []
             lineas_poligono = []
@@ -179,28 +180,30 @@ class Window:
 
             for c in range(len(self.problem.adaboost["clasificadores"])):
                 self.polygons.append([])
-                puntos = []
-                punto_actual = lineas_poligono[c][0][1]
-                puntos.append(lineas_poligono[c][0][0])
-                del lineas_poligono[c][0]
                 while len(lineas_poligono[c]) != 0:
-                    for linea in range(len(lineas_poligono[c])):
-                        ind = -1
-                        if str(punto_actual) == str(lineas_poligono[c][linea][0]):
-                            ind = 1
-                        if str(punto_actual) == str(lineas_poligono[c][linea][1]):
-                            ind = 0
-                        if ind != -1:
-                            puntos.append(punto_actual)
-                            punto_actual = lineas_poligono[c][linea][ind]
-                            del lineas_poligono[c][linea]
-                            break
-                poli = Polygon(puntos)
-                poli.setOutline(self.problem.params["class_colors"][c])
-                poli.setFill(self.problem.params["class_colors"][c])
-                self.polygons[c].append(poli)
-                if c == 0:
-                    poli.draw(self.win)
+                    puntos = []
+                    primer_punto = lineas_poligono[c][0][0]
+                    punto_actual = lineas_poligono[c][0][1]
+                    puntos.append(primer_punto)
+                    del lineas_poligono[c][0]
+                    while str(primer_punto) != str(punto_actual):
+                        for linea in range(len(lineas_poligono[c])):
+                            ind = -1
+                            if str(punto_actual) == str(lineas_poligono[c][linea][0]):
+                                ind = 1
+                            if str(punto_actual) == str(lineas_poligono[c][linea][1]):
+                                ind = 0
+                            if ind != -1:
+                                puntos.append(punto_actual)
+                                punto_actual = lineas_poligono[c][linea][ind]
+                                del lineas_poligono[c][linea]
+                                break
+                    poli = Polygon(puntos)
+                    poli.setOutline(self.problem.params["class_colors"][c])
+                    poli.setFill(self.problem.params["class_colors"][c])
+                    self.polygons[c].append(poli)
+                    if c == 0:
+                        poli.draw(self.win)
 
     def get_mouse(self):
         return self.win.getMouse()
@@ -276,4 +279,8 @@ def main():
         data_file.write(window.problem.data_to_string())
         data_file.close()
 
+GROSOR = 4
+if 1 < len(sys.argv):
+    GROSOR = int(sys.argv[1])
+print(GROSOR)
 main()
